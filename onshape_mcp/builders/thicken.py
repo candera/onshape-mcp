@@ -94,53 +94,56 @@ class ThickenBuilder:
 
         # Build the feature data
         feature = {
-            "btType": "BTMFeature-134",
-            "name": self.name,
-            "suppressed": False,
-            "namespace": "",
-            "featureType": "thicken",
-            "parameters": [
-                {
-                    "btType": "BTMParameterEnum-145",
-                    "enumName": "NewBodyOperationType",
-                    "value": self.operation_type.value,
-                    "parameterId": "operationType",
-                },
-                {
-                    "btType": "BTMParameterQueryList-148",
-                    "queries": [
-                        {
-                            "btType": "BTMIndividualSketchRegionQuery-140",
-                            "queryStatement": None,
-                            "filterInnerLoops": True,
-                            "queryString": f'query = qSketchRegion(id + "{self.sketch_feature_id}", true);',
-                            "featureId": self.sketch_feature_id,
-                            "deterministicIds": [],
-                        }
-                    ],
-                    "parameterId": "entities",
-                },
-                {
-                    "btType": "BTMParameterBoolean-144",
-                    "value": self.midplane,
-                    "parameterId": "midplane",
-                },
-                {
-                    "btType": "BTMParameterQuantity-147",
-                    "expression": thickness_expr,
-                    "parameterId": "thickness1",
-                },
-                {
-                    "btType": "BTMParameterBoolean-144",
-                    "value": self.opposite_direction,
-                    "parameterId": "oppositeDirection",
-                },
-                {
-                    "btType": "BTMParameterQuantity-147",
-                    "expression": "0 in",
-                    "parameterId": "thickness2",
-                },
-            ],
+            "btType": "BTFeatureDefinitionCall-1406",
+            "feature": {
+                "btType": "BTMFeature-134",
+                "name": self.name,
+                "suppressed": False,
+                "namespace": "",
+                "featureType": "thicken",
+                "parameters": [
+                    {
+                        "btType": "BTMParameterEnum-145",
+                        "enumName": "NewBodyOperationType",
+                        "value": self.operation_type.value,
+                        "parameterId": "operationType",
+                    },
+                    {
+                        "btType": "BTMParameterQueryList-148",
+                        "queries": [
+                            {
+                                "btType": "BTMIndividualSketchRegionQuery-140",
+                                "queryStatement": None,
+                                "filterInnerLoops": True,
+                                "queryString": f'query = qSketchRegion(id + "{self.sketch_feature_id}", true);',
+                                "featureId": self.sketch_feature_id,
+                                "deterministicIds": [],
+                            }
+                        ],
+                        "parameterId": "entities",
+                    },
+                    {
+                        "btType": "BTMParameterBoolean-144",
+                        "value": self.midplane,
+                        "parameterId": "midplane",
+                    },
+                    {
+                        "btType": "BTMParameterQuantity-147",
+                        "expression": thickness_expr,
+                        "parameterId": "thickness1",
+                    },
+                    {
+                        "btType": "BTMParameterBoolean-144",
+                        "value": self.opposite_direction,
+                        "parameterId": "oppositeDirection",
+                    },
+                    {
+                        "btType": "BTMParameterQuantity-147",
+                        "expression": "0 in",
+                        "parameterId": "thickness2",
+                    },
+                ],
+            },
         }
 
         return feature
