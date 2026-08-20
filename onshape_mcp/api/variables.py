@@ -37,7 +37,7 @@ class VariableManager:
         Returns:
             List of variables
         """
-        path = f"/api/v6/variables/d/{document_id}/w/{workspace_id}/e/{element_id}/variables"
+        path = f"/api/v9/variables/d/{document_id}/w/{workspace_id}/e/{element_id}/variables"
         response = await self.client.get(path)
 
         variables = []
@@ -74,7 +74,7 @@ class VariableManager:
         Returns:
             API response
         """
-        path = f"/api/v6/variables/d/{document_id}/w/{workspace_id}/e/{element_id}/variables"
+        path = f"/api/v9/variables/d/{document_id}/w/{workspace_id}/e/{element_id}/variables"
 
         data = [{"name": name, "expression": expression}]
 
