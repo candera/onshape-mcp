@@ -41,6 +41,11 @@ target-version = ['py310']
 line-length = 100
 target-version = "py310"
 
+[tool.ruff.lint]
+# Pin the rule set explicitly. ruff 0.16 changed its defaults, and CI installs the
+# latest ruff, so without this the lint step reports hundreds of pre-existing findings.
+select = ["E4", "E7", "E9", "F"]
+
 [tool.ruff.lint.per-file-ignores]
 # load_dotenv() must run before local imports read env vars
 "onshape_mcp/server.py" = ["E402"]
