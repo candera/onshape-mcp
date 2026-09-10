@@ -92,7 +92,7 @@ class TestLinearPatternBuilder:
         assert inst["featureIds"] == ["f1", "f2"]
 
     def test_build_direction_mapping(self):
-        for axis, expected in [("X", "Right"), ("Y", "Top"), ("Z", "Front")]:
+        for axis, expected in [("X", "Right"), ("Y", "Front"), ("Z", "Top")]:
             lp = LinearPatternBuilder()
             lp.add_feature("f1").set_direction(axis)
             result = lp.build()

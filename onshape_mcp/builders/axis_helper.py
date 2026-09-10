@@ -26,10 +26,12 @@ _PLANE_ID = {"Front": "JCC", "Top": "JDC", "Right": "JEC"}
 
 # Global axis -> (default plane the line is drawn on, its plane id, line endpoints
 # in that plane's local 2D coords). Each line passes through the origin and runs
-# along the requested global axis.
+# along the requested global axis. Default-plane local axes are: Top (x=X, y=Y,
+# normal Z), Front (x=X, y=Z, normal -Y), Right (x=Y, y=Z, normal X) - so a world-Y
+# line must be drawn on Top (or Right), never on Front.
 _AXIS_LINE = {
     "X": ("Top", _PLANE_ID["Top"], (-1.0, 0.0), (1.0, 0.0)),
-    "Y": ("Front", _PLANE_ID["Front"], (0.0, -1.0), (0.0, 1.0)),
+    "Y": ("Top", _PLANE_ID["Top"], (0.0, -1.0), (0.0, 1.0)),
     "Z": ("Right", _PLANE_ID["Right"], (0.0, -1.0), (0.0, 1.0)),
 }
 
@@ -37,8 +39,8 @@ _AXIS_LINE = {
 # linear-pattern direction (the pattern uses the face normal).
 FACE_QUERY_FOR_DIRECTION = {
     "X": 'query = qCreatedBy(makeId("Right"), EntityType.FACE);',
-    "Y": 'query = qCreatedBy(makeId("Top"), EntityType.FACE);',
-    "Z": 'query = qCreatedBy(makeId("Front"), EntityType.FACE);',
+    "Y": 'query = qCreatedBy(makeId("Front"), EntityType.FACE);',
+    "Z": 'query = qCreatedBy(makeId("Top"), EntityType.FACE);',
 }
 
 
