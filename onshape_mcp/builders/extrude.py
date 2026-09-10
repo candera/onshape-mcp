@@ -97,7 +97,6 @@ class ExtrudeBuilder:
                         ],
                         "parameterId": "entities",
                         "parameterName": "",
-                        "libraryRelationType": "NONE",
                     },
                     {
                         "btType": "BTMParameterEnum-145",
@@ -106,7 +105,6 @@ class ExtrudeBuilder:
                         "value": self.operation_type.value,
                         "parameterId": "operationType",
                         "parameterName": "",
-                        "libraryRelationType": "NONE",
                     },
                     {
                         "btType": "BTMParameterQuantity-147",
@@ -116,14 +114,12 @@ class ExtrudeBuilder:
                         "expression": depth_expression,
                         "parameterId": "depth",
                         "parameterName": "",
-                        "libraryRelationType": "NONE",
                     },
                     {
                         "btType": "BTMParameterBoolean-144",
                         "value": False,
                         "parameterId": "oppositeDirection",
                         "parameterName": "",
-                        "libraryRelationType": "NONE",
                     },
                 ],
             },
