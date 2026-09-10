@@ -1718,11 +1718,16 @@ class TestFeatureTools:
         assert "chamfer" in result[0].text.lower()
 
     @pytest.mark.asyncio
+    @patch("onshape_mcp.server.featurescript_manager")
     @patch("onshape_mcp.server.partstudio_manager")
-    async def test_create_revolve_success(self, mock_ps):
+    async def test_create_revolve_success(self, mock_ps, mock_fs):
         """Test creating a revolve."""
         mock_ps.add_feature = AsyncMock(
             return_value={"feature": {"featureId": "rev123"}}
+        )
+        # _create_axis_edge evaluates FeatureScript to find the axis line's edge
+        mock_fs.evaluate = AsyncMock(
+            return_value={"result": {"value": [{"value": "axisEdge1"}]}}
         )
 
         arguments = {
@@ -1768,11 +1773,15 @@ class TestFeatureTools:
         assert "lp123" in result[0].text
 
     @pytest.mark.asyncio
+    @patch("onshape_mcp.server.featurescript_manager")
     @patch("onshape_mcp.server.partstudio_manager")
-    async def test_create_circular_pattern_success(self, mock_ps):
+    async def test_create_circular_pattern_success(self, mock_ps, mock_fs):
         """Test creating a circular pattern."""
         mock_ps.add_feature = AsyncMock(
             return_value={"feature": {"featureId": "cp123"}}
+        )
+        mock_fs.evaluate = AsyncMock(
+            return_value={"result": {"value": [{"value": "axisEdge1"}]}}
         )
 
         arguments = {

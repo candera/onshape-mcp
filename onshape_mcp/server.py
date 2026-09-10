@@ -31,6 +31,7 @@ from .builders.fillet import FilletBuilder
 from .builders.chamfer import ChamferBuilder, ChamferType
 from .builders.revolve import RevolveBuilder, RevolveType
 from .builders.pattern import LinearPatternBuilder, CircularPatternBuilder
+from .builders.axis_helper import build_axis_sketch
 from .builders.boolean import BooleanBuilder, BooleanType
 from .analysis.interference import check_assembly_interference, format_interference_result
 from .analysis.positioning import get_assembly_positions, set_absolute_position, align_to_face
@@ -58,6 +59,28 @@ document_manager = DocumentManager(client)
 assembly_manager = AssemblyManager(client)
 featurescript_manager = FeatureScriptManager(client)
 export_manager = ExportManager(client)
+
+
+async def _create_axis_edge(document_id: str, workspace_id: str, element_id: str, axis: str) -> str:
+    """Add a construction line through the origin along the global ``axis`` and
+    return that line's edge deterministic id, for use as a revolve / circular
+    pattern axis. Onshape exposes no queryable origin axis, so we make one."""
+    sketch_payload = build_axis_sketch(axis, name=f"_Axis {axis.upper()}")
+    result = await partstudio_manager.add_feature(
+        document_id, workspace_id, element_id, sketch_payload
+    )
+    sketch_id = result.get("feature", {}).get("featureId", result.get("featureId"))
+    fs = await featurescript_manager.evaluate(
+        document_id,
+        workspace_id,
+        element_id,
+        'function(context is Context, queries) { return transientQueriesToStrings('
+        f'evaluateQuery(context, qCreatedBy(makeId("{sketch_id}"), EntityType.EDGE))); }}',
+    )
+    values = fs.get("result", {}).get("value", [])
+    if not values:
+        raise RuntimeError("axis construction line produced no edge")
+    return values[0]["value"]
 
 
 @app.list_tools()
@@ -1255,7 +1278,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             return [
                 TextContent(
                     type="text",
-                    text=f"Created extrude '{arguments.get('name', 'Extrude')}'. Feature ID: {result.get('featureId', 'unknown')}",
+                    text=f"Created extrude '{arguments.get('name', 'Extrude')}'. Feature ID: {result.get('feature', {}).get('featureId', result.get('featureId', 'unknown'))}",
                 )
             ]
         except httpx.HTTPStatusError as e:
@@ -1323,7 +1346,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             return [
                 TextContent(
                     type="text",
-                    text=f"Created thicken '{arguments.get('name', 'Thicken')}'. Feature ID: {result.get('featureId', 'unknown')}",
+                    text=f"Created thicken '{arguments.get('name', 'Thicken')}'. Feature ID: {result.get('feature', {}).get('featureId', result.get('featureId', 'unknown'))}",
                 )
             ]
         except httpx.HTTPStatusError as e:
@@ -2221,7 +2244,11 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
                 angle=arguments.get("angle", 360.0),
                 operation_type=op_type,
             )
-            feature_data = revolve.build()
+            axis_edge_id = await _create_axis_edge(
+                arguments["documentId"], arguments["workspaceId"], arguments["elementId"],
+                arguments.get("axis", "Y"),
+            )
+            feature_data = revolve.build(axis_edge_id=axis_edge_id)
             result = await partstudio_manager.add_feature(
                 arguments["documentId"], arguments["workspaceId"], arguments["elementId"], feature_data,
             )
@@ -2263,7 +2290,11 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             pattern.set_axis(arguments.get("axis", "Z"))
             for fid in arguments["featureIds"]:
                 pattern.add_feature(fid)
-            feature_data = pattern.build()
+            axis_edge_id = await _create_axis_edge(
+                arguments["documentId"], arguments["workspaceId"], arguments["elementId"],
+                arguments.get("axis", "Z"),
+            )
+            feature_data = pattern.build(axis_edge_id=axis_edge_id)
             result = await partstudio_manager.add_feature(
                 arguments["documentId"], arguments["workspaceId"], arguments["elementId"], feature_data,
             )
